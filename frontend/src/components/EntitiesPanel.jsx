@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { api } from "../api";
+import { Spinner, SkeletonLines } from "./Loading";
 
 const SAMPLE =
   "Marie Curie was born in Warsaw, Poland, and later moved to Paris where she conducted her research at the Sorbonne. In 1903, she and Pierre Curie won the Nobel Prize in Physics.";
@@ -81,12 +82,15 @@ export default function EntitiesPanel() {
       />
 
       <button className="run-btn" onClick={run} disabled={loading || !text.trim()}>
+        {loading && <Spinner />}
         {loading ? "tagging…" : "run analysis"}
       </button>
 
       {error && <div className="error-note">{error}</div>}
 
-      {entities && (
+      {loading && <SkeletonLines lines={4} />}
+
+      {entities && !loading && (
         <div className="output">
           <div className="output-label">
             TAGGED TEXT ({entities.length} entities)

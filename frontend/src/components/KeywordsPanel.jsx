@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { api } from "../api";
+import { Spinner, SkeletonLines } from "./Loading";
 
 const SAMPLE =
   "Climate change is driving more frequent extreme weather events, including heatwaves, droughts, and intense rainfall. Scientists warn that without significant reductions in greenhouse gas emissions, these patterns will worsen over the coming decades, threatening food security and freshwater supplies worldwide.";
@@ -38,12 +39,15 @@ export default function KeywordsPanel() {
       />
 
       <button className="run-btn" onClick={run} disabled={loading || !text.trim()}>
+        {loading && <Spinner />}
         {loading ? "extracting…" : "run analysis"}
       </button>
 
       {error && <div className="error-note">{error}</div>}
 
-      {keywords && (
+      {loading && <SkeletonLines lines={5} />}
+
+      {keywords && !loading && (
         <div className="output">
           <div className="output-label">TOP PHRASES</div>
           <div className="keyword-list">

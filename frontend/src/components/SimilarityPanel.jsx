@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { api } from "../api";
+import { Spinner, SkeletonLines } from "./Loading";
 
 export default function SimilarityPanel() {
   const [query, setQuery] = useState("a fast way to cook rice");
@@ -77,13 +78,16 @@ export default function SimilarityPanel() {
           onClick={run}
           disabled={loading || !query.trim() || candidates.filter(Boolean).length === 0}
         >
+          {loading && <Spinner />}
           {loading ? "comparing…" : "run analysis"}
         </button>
       </div>
 
       {error && <div className="error-note">{error}</div>}
 
-      {results && (
+      {loading && <SkeletonLines lines={4} />}
+
+      {results && !loading && (
         <div className="output">
           <div className="output-label">RANKED BY SIMILARITY</div>
           {results.map((r, i) => (

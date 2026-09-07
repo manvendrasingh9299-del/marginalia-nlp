@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { api } from "../api";
+import { Spinner, SkeletonBar } from "./Loading";
 
 export default function SentimentPanel() {
   const [text, setText] = useState(
@@ -35,12 +36,15 @@ export default function SentimentPanel() {
       />
 
       <button className="run-btn" onClick={run} disabled={loading || !text.trim()}>
+        {loading && <Spinner />}
         {loading ? "analyzing…" : "run analysis"}
       </button>
 
       {error && <div className="error-note">{error}</div>}
 
-      {result && (
+      {loading && <SkeletonBar />}
+
+      {result && !loading && (
         <div className="output">
           <div className="output-label">RESULT</div>
           <div className="sentiment-card">
