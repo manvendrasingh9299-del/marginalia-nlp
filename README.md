@@ -148,6 +148,3 @@ the history shows how you build, not just that a button was clicked.
 This started as a personal project, but issues and PRs are welcome —
 especially for items on the roadmap above.
 
-## License
-
-MIT — do whatever you want with it.
