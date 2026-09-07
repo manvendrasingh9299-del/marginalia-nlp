@@ -1,33 +1,86 @@
 # Marginalia — NLP Toolkit
 
-A small full-stack NLP dashboard. Python/FastAPI backend running local, free
-Hugging Face and spaCy models; React frontend for exploring the results.
-No API key required — everything runs on your machine.
+![Python](https://img.shields.io/badge/Python-3.10+-3776AB?logo=python&logoColor=white)
+![FastAPI](https://img.shields.io/badge/FastAPI-009688?logo=fastapi&logoColor=white)
+![React](https://img.shields.io/badge/React-18-61DAFB?logo=react&logoColor=black)
+![Vite](https://img.shields.io/badge/Vite-5-646CFF?logo=vite&logoColor=white)
+![License](https://img.shields.io/badge/license-MIT-blue)
 
-**Features**
-- Sentiment analysis (DistilBERT, SST-2)
-- Abstractive summarization (DistilBART)
-- Named entity recognition (spaCy `en_core_web_sm`), rendered as inline highlights
-- Keyword / key-phrase extraction (YAKE)
-- Semantic similarity search (Sentence-Transformers `all-MiniLM-L6-v2`)
+A full-stack NLP dashboard: a FastAPI backend running five NLP tasks on
+local, free Hugging Face and spaCy models, paired with a React frontend
+for exploring the results interactively. **No API key required** —
+everything runs on your machine, offline after the first model download.
+
+<p align="center">
+  <em>Sentiment · Summarization · Named Entity Recognition · Keyword Extraction · Semantic Similarity</em>
+</p>
+
+---
+
+## Features
+
+| Task | Model | What it does |
+|---|---|---|
+| **Sentiment** | `distilbert-base-uncased-finetuned-sst-2-english` | Classifies text as positive/negative with a confidence score |
+| **Summarize** | `sshleifer/distilbart-cnn-12-6` | Generates an abstractive summary of longer passages |
+| **Entities** | spaCy `en_core_web_sm` | Extracts people, places, organizations, dates, etc., rendered as inline highlights |
+| **Keywords** | YAKE | Unsupervised extraction of key terms and phrases, no training data needed |
+| **Similarity** | `all-MiniLM-L6-v2` | Ranks a set of candidate texts by semantic closeness to a query |
+
+Every model above is open-source and runs locally via `transformers`,
+`spacy`, and `sentence-transformers` — there's no external API call and
+no billing to worry about.
 
 ## Project structure
-
-```
 nlp-toolkit/
 ├── backend/
-│   └── app/
-│       ├── main.py          # FastAPI app + CORS
-│       ├── models.py        # request/response schemas
-│       ├── nlp_models.py    # lazy-loaded, cached model singletons
-│       └── routes/
-│           └── analyze.py   # all /analyze/* endpoints
+│ ├── requirements.txt
+│ └── app/
+│ ├── main.py # FastAPI app + CORS
+│ ├── models.py # request/response schemas
+│ ├── nlp_models.py # lazy-loaded, cached model singletons
+│ └── routes/
+│ └── analyze.py # all /analyze/* endpoints
 └── frontend/
-    └── src/
-        ├── App.jsx
-        ├── api.js
-        └── components/      # one panel per feature
-```
+├── index.html
+├── package.json
+├── vite.config.js
+└── src/
+├── App.jsx
+├── api.js
+├── index.css
+└── components/ # one panel per feature + shared Loading UI
+
+
+## Architecture
+
+┌─────────────────┐ HTTP/JSON ┌──────────────────────┐
+│ React (Vite) │ ───────────────────▶ │ FastAPI │
+│ localhost:5173 │ ◀─────────────────── │ localhost:8000 │
+└─────────────────┘ └──────────┬────────────┘
+│
+┌───────────▼────────────┐
+│ transformers / spaCy / │
+│ sentence-transformers │
+│ (local, cached models) │
+└─────────────────────────┘
+
+
+The frontend never talks to any external AI API — every request goes to
+your own FastAPI server, which runs inference locally.
+
+## API reference
+
+Once the backend is running, full interactive docs are available at
+`http://localhost:8000/docs` (Swagger UI). Quick reference:
+
+| Method | Endpoint | Body |
+|---|---|---|
+| `POST` | `/analyze/sentiment` | `{ "text": string }` |
+| `POST` | `/analyze/summarize` | `{ "text": string, "max_length": int, "min_length": int }` |
+| `POST` | `/analyze/entities` | `{ "text": string }` |
+| `POST` | `/analyze/keywords` | `{ "text": string }` |
+| `POST` | `/analyze/similarity` | `{ "query": string, "candidates": string[] }` |
 
 ## Setup
 
@@ -73,6 +126,27 @@ as you extend the project (and genuinely useful things to have built):
 Working through a list like this one feature at a time, with a real commit
 per change, is exactly what makes a repo worth showing in an interview —
 the history shows how you build, not just that a button was clicked.
+
+## Troubleshooting
+
+- **`ModuleNotFoundError: No module named 'spacy'` or similar** — make sure
+  your virtual environment is activated (`source .venv/bin/activate`)
+  before running `pip install` or `uvicorn`.
+- **`pip` can't find a matching `torch` version** — this usually means
+  your Python version is newer than the pinned version supports. Use
+  `>=` version ranges in `requirements.txt` instead of `==`, or install
+  Python 3.11/3.12 via `pyenv`/`brew` if you're on a very new release.
+- **CORS errors in the browser console** — confirm the backend is running
+  on port 8000 and the frontend on port 5173; `app/main.py` only allows
+  those two origins by default.
+- **First request to Summarize/Similarity is slow** — that's the model
+  weights downloading (a few hundred MB total). It only happens once;
+  subsequent requests use the local cache.
+
+## Contributing
+
+This started as a personal project, but issues and PRs are welcome —
+especially for items on the roadmap above.
 
 ## License
 
