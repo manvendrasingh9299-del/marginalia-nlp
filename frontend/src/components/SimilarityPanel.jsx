@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { api } from "../api";
 import { Spinner, SkeletonLines } from "./Loading";
+import { useToast } from "../context/ToastContext";
 
 export default function SimilarityPanel() {
   const [query, setQuery] = useState("a fast way to cook rice");
@@ -13,6 +14,7 @@ export default function SimilarityPanel() {
   const [results, setResults] = useState(null);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
+  const { addToast } = useToast();
 
   function updateCandidate(i, value) {
     const next = [...candidates];
@@ -31,8 +33,10 @@ export default function SimilarityPanel() {
       const cleaned = candidates.map((c) => c.trim()).filter(Boolean);
       const res = await api.similarity(query, cleaned);
       setResults(res);
+      addToast("Ranked by similarity", "success");
     } catch (e) {
       setError(e.message);
+      addToast(e.message, "error");
     } finally {
       setLoading(false);
     }

@@ -1,10 +1,10 @@
 import { useState } from "react";
 import SentimentPanel from "./components/SentimentPanel";
-import ToastContainer from "./components/ToastContainer";
 import SummarizePanel from "./components/SummarizePanel";
 import EntitiesPanel from "./components/EntitiesPanel";
 import KeywordsPanel from "./components/KeywordsPanel";
 import SimilarityPanel from "./components/SimilarityPanel";
+import ToastContainer from "./components/ToastContainer";
 
 const TABS = [
   { id: "sentiment", label: "Sentiment", component: SentimentPanel },
@@ -20,6 +20,7 @@ export default function App() {
 
   return (
     <div className="app-shell">
+      <ToastContainer />
       <aside className="sidebar">
         <div className="wordmark">
           Marginalia

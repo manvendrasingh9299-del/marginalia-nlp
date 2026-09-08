@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { api } from "../api";
 import { Spinner, SkeletonLines } from "./Loading";
+import { useToast } from "../context/ToastContext";
 
 const SAMPLE =
   "Marie Curie was born in Warsaw, Poland, and later moved to Paris where she conducted her research at the Sorbonne. In 1903, she and Pierre Curie won the Nobel Prize in Physics.";
@@ -25,6 +26,7 @@ export default function EntitiesPanel() {
   const [entities, setEntities] = useState(null);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
+  const { addToast } = useToast();
 
   async function run() {
     setLoading(true);
@@ -32,8 +34,10 @@ export default function EntitiesPanel() {
     try {
       const res = await api.entities(text);
       setEntities(res);
+      addToast(`Found ${res.length} entities`, "success");
     } catch (e) {
       setError(e.message);
+      addToast(e.message, "error");
     } finally {
       setLoading(false);
     }

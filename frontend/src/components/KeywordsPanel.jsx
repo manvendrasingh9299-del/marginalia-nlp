@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { api } from "../api";
 import { Spinner, SkeletonLines } from "./Loading";
+import { useToast } from "../context/ToastContext";
 
 const SAMPLE =
   "Climate change is driving more frequent extreme weather events, including heatwaves, droughts, and intense rainfall. Scientists warn that without significant reductions in greenhouse gas emissions, these patterns will worsen over the coming decades, threatening food security and freshwater supplies worldwide.";
@@ -10,6 +11,7 @@ export default function KeywordsPanel() {
   const [keywords, setKeywords] = useState(null);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
+  const { addToast } = useToast();
 
   async function run() {
     setLoading(true);
@@ -17,8 +19,10 @@ export default function KeywordsPanel() {
     try {
       const res = await api.keywords(text);
       setKeywords(res);
+      addToast(`Extracted ${res.length} keywords`, "success");
     } catch (e) {
       setError(e.message);
+      addToast(e.message, "error");
     } finally {
       setLoading(false);
     }

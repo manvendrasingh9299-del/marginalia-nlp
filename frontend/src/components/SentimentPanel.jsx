@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { api } from "../api";
 import { Spinner, SkeletonBar } from "./Loading";
+import { useToast } from "../context/ToastContext";
 
 export default function SentimentPanel() {
   const [text, setText] = useState(
@@ -9,6 +10,7 @@ export default function SentimentPanel() {
   const [result, setResult] = useState(null);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
+  const { addToast } = useToast();
 
   async function run() {
     setLoading(true);
@@ -16,8 +18,10 @@ export default function SentimentPanel() {
     try {
       const res = await api.sentiment(text);
       setResult(res);
+      addToast("Sentiment analysis complete", "success");
     } catch (e) {
       setError(e.message);
+      addToast(e.message, "error");
     } finally {
       setLoading(false);
     }
