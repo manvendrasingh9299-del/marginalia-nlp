@@ -1,5 +1,6 @@
 import { useState } from "react";
 import SentimentPanel from "./components/SentimentPanel";
+import ToastContainer from "./components/ToastContainer";
 import SummarizePanel from "./components/SummarizePanel";
 import EntitiesPanel from "./components/EntitiesPanel";
 import KeywordsPanel from "./components/KeywordsPanel";
