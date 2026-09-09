@@ -2,6 +2,7 @@ import { useState } from "react";
 import { api } from "../api";
 import { Spinner, SkeletonLines } from "./Loading";
 import { useToast } from "../context/ToastContext";
+import CopyButton from "./CopyButton";
 
 export default function SimilarityPanel() {
   const [query, setQuery] = useState("a fast way to cook rice");
@@ -42,6 +43,17 @@ export default function SimilarityPanel() {
     }
   }
 
+  function handleKeyDown(e) {
+    if ((e.metaKey || e.ctrlKey) && e.key === "Enter") {
+      e.preventDefault();
+      if (!loading && query.trim() && candidates.filter(Boolean).length > 0) run();
+    }
+  }
+
+  const resultsAsText = results
+    ? results.map((r, i) => `${i + 1}. ${r.candidate} (${r.score.toFixed(3)})`).join("\n")
+    : "";
+
   return (
     <div>
       <h1 className="panel-title">Similarity</h1>
@@ -52,6 +64,7 @@ export default function SimilarityPanel() {
         className="manuscript"
         value={query}
         onChange={(e) => setQuery(e.target.value)}
+        onKeyDown={handleKeyDown}
       />
 
       <label className="field-label" style={{ marginTop: 18 }}>
@@ -63,6 +76,7 @@ export default function SimilarityPanel() {
             className="manuscript"
             value={c}
             onChange={(e) => updateCandidate(i, e.target.value)}
+            onKeyDown={handleKeyDown}
           />
           <button className="remove-btn" onClick={() => removeCandidate(i)}>
             ×
@@ -85,6 +99,7 @@ export default function SimilarityPanel() {
           {loading && <Spinner />}
           {loading ? "comparing…" : "run analysis"}
         </button>
+        <span className="shortcut-hint">⌘/Ctrl + Enter to run</span>
       </div>
 
       {error && <div className="error-note">{error}</div>}
@@ -93,7 +108,10 @@ export default function SimilarityPanel() {
 
       {results && !loading && (
         <div className="output">
-          <div className="output-label">RANKED BY SIMILARITY</div>
+          <div className="output-label-row">
+            <div className="output-label">RANKED BY SIMILARITY</div>
+            <CopyButton text={resultsAsText} />
+          </div>
           {results.map((r, i) => (
             <div className="sim-result-row" key={i}>
               <span className="sim-rank">{i + 1}</span>

@@ -2,6 +2,8 @@ import { useState } from "react";
 import { api } from "../api";
 import { Spinner, SkeletonLines } from "./Loading";
 import { useToast } from "../context/ToastContext";
+import CopyButton from "./CopyButton";
+import WordCounter from "./WordCounter";
 
 const SAMPLE =
   "Marie Curie was born in Warsaw, Poland, and later moved to Paris where she conducted her research at the Sorbonne. In 1903, she and Pierre Curie won the Nobel Prize in Physics.";
@@ -43,6 +45,13 @@ export default function EntitiesPanel() {
     }
   }
 
+  function handleKeyDown(e) {
+    if ((e.metaKey || e.ctrlKey) && e.key === "Enter") {
+      e.preventDefault();
+      if (!loading && text.trim()) run();
+    }
+  }
+
   function renderHighlighted() {
     if (!entities || entities.length === 0) return text;
     const sorted = [...entities].sort((a, b) => a.start - b.start);
@@ -70,6 +79,10 @@ export default function EntitiesPanel() {
     ? [...new Set(entities.map((e) => e.label))]
     : [];
 
+  const entitiesAsText = entities
+    ? entities.map((e) => `${e.text} (${e.label})`).join(", ")
+    : "";
+
   return (
     <div>
       <h1 className="panel-title">Entities</h1>
@@ -83,12 +96,15 @@ export default function EntitiesPanel() {
           setText(e.target.value);
           setEntities(null);
         }}
+        onKeyDown={handleKeyDown}
       />
+      <WordCounter text={text} />
 
       <button className="run-btn" onClick={run} disabled={loading || !text.trim()}>
         {loading && <Spinner />}
         {loading ? "tagging…" : "run analysis"}
       </button>
+      <span className="shortcut-hint">⌘/Ctrl + Enter to run</span>
 
       {error && <div className="error-note">{error}</div>}
 
@@ -96,8 +112,11 @@ export default function EntitiesPanel() {
 
       {entities && !loading && (
         <div className="output">
-          <div className="output-label">
-            TAGGED TEXT ({entities.length} entities)
+          <div className="output-label-row">
+            <div className="output-label">
+              TAGGED TEXT ({entities.length} entities)
+            </div>
+            <CopyButton text={entitiesAsText} />
           </div>
           <div className="entity-text">{renderHighlighted()}</div>
 

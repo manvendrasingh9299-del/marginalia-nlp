@@ -2,6 +2,8 @@ import { useState } from "react";
 import { api } from "../api";
 import { Spinner, SkeletonLines } from "./Loading";
 import { useToast } from "../context/ToastContext";
+import CopyButton from "./CopyButton";
+import WordCounter from "./WordCounter";
 
 const SAMPLE = `The James Webb Space Telescope has revolutionized our view of the early universe. Since becoming operational, it has captured images of galaxies formed within a few hundred million years of the Big Bang, far earlier than astronomers expected to find well-structured galaxies. Its infrared instruments allow it to peer through cosmic dust that blocked earlier telescopes, revealing star-forming regions in unprecedented detail. Researchers are now revising models of galaxy formation to account for these surprisingly mature early structures. The telescope is also analyzing the atmospheres of exoplanets, searching for chemical signatures that could indicate habitability.`;
 
@@ -29,6 +31,13 @@ export default function SummarizePanel() {
     }
   }
 
+  function handleKeyDown(e) {
+    if ((e.metaKey || e.ctrlKey) && e.key === "Enter") {
+      e.preventDefault();
+      if (!loading && text.trim()) run();
+    }
+  }
+
   return (
     <div>
       <h1 className="panel-title">Summarize</h1>
@@ -39,7 +48,9 @@ export default function SummarizePanel() {
         className="manuscript"
         value={text}
         onChange={(e) => setText(e.target.value)}
+        onKeyDown={handleKeyDown}
       />
+      <WordCounter text={text} minWords={15} />
 
       <div className="row">
         <div className="num-field">
@@ -66,6 +77,7 @@ export default function SummarizePanel() {
         {loading && <Spinner />}
         {loading ? "summarizing…" : "run analysis"}
       </button>
+      <span className="shortcut-hint">⌘/Ctrl + Enter to run</span>
 
       {error && <div className="error-note">{error}</div>}
 
@@ -73,7 +85,10 @@ export default function SummarizePanel() {
 
       {result && !loading && (
         <div className="output">
-          <div className="output-label">SUMMARY</div>
+          <div className="output-label-row">
+            <div className="output-label">SUMMARY</div>
+            <CopyButton text={result.summary} />
+          </div>
           <p className="summary-text">{result.summary}</p>
         </div>
       )}

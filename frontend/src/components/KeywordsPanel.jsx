@@ -2,6 +2,8 @@ import { useState } from "react";
 import { api } from "../api";
 import { Spinner, SkeletonLines } from "./Loading";
 import { useToast } from "../context/ToastContext";
+import CopyButton from "./CopyButton";
+import WordCounter from "./WordCounter";
 
 const SAMPLE =
   "Climate change is driving more frequent extreme weather events, including heatwaves, droughts, and intense rainfall. Scientists warn that without significant reductions in greenhouse gas emissions, these patterns will worsen over the coming decades, threatening food security and freshwater supplies worldwide.";
@@ -28,7 +30,15 @@ export default function KeywordsPanel() {
     }
   }
 
+  function handleKeyDown(e) {
+    if ((e.metaKey || e.ctrlKey) && e.key === "Enter") {
+      e.preventDefault();
+      if (!loading && text.trim()) run();
+    }
+  }
+
   const maxScore = keywords ? Math.max(...keywords.map((k) => k.score)) : 1;
+  const keywordsAsText = keywords ? keywords.map((k) => k.keyword).join(", ") : "";
 
   return (
     <div>
@@ -40,12 +50,15 @@ export default function KeywordsPanel() {
         className="manuscript"
         value={text}
         onChange={(e) => setText(e.target.value)}
+        onKeyDown={handleKeyDown}
       />
+      <WordCounter text={text} />
 
       <button className="run-btn" onClick={run} disabled={loading || !text.trim()}>
         {loading && <Spinner />}
         {loading ? "extracting…" : "run analysis"}
       </button>
+      <span className="shortcut-hint">⌘/Ctrl + Enter to run</span>
 
       {error && <div className="error-note">{error}</div>}
 
@@ -53,7 +66,10 @@ export default function KeywordsPanel() {
 
       {keywords && !loading && (
         <div className="output">
-          <div className="output-label">TOP PHRASES</div>
+          <div className="output-label-row">
+            <div className="output-label">TOP PHRASES</div>
+            <CopyButton text={keywordsAsText} />
+          </div>
           <div className="keyword-list">
             {keywords.map((k, i) => (
               <div className="keyword-row" key={i}>
