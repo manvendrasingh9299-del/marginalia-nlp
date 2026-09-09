@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import SentimentPanel from "./components/SentimentPanel";
 import SummarizePanel from "./components/SummarizePanel";
 import EntitiesPanel from "./components/EntitiesPanel";
@@ -16,12 +16,56 @@ const TABS = [
 
 export default function App() {
   const [active, setActive] = useState("sentiment");
+  const [mobileNavOpen, setMobileNavOpen] = useState(false);
+  const [theme, setTheme] = useState("light");
+
+  useEffect(() => {
+    document.documentElement.setAttribute("data-theme", theme);
+  }, [theme]);
+
   const ActivePanel = TABS.find((t) => t.id === active).component;
+
+  function selectTab(id) {
+    setActive(id);
+    setMobileNavOpen(false);
+  }
+
+  function toggleTheme() {
+    setTheme((t) => (t === "light" ? "dark" : "light"));
+  }
 
   return (
     <div className="app-shell">
       <ToastContainer />
-      <aside className="sidebar">
+
+      <div className="mobile-topbar">
+        <button
+          className="hamburger-btn"
+          onClick={() => setMobileNavOpen(true)}
+          aria-label="Open menu"
+        >
+          ☰
+        </button>
+        <div className="wordmark" style={{ fontSize: 18 }}>
+          Marginalia
+        </div>
+        <button
+          className="hamburger-btn"
+          onClick={toggleTheme}
+          aria-label="Toggle theme"
+        >
+          {theme === "light" ? "☾" : "☀"}
+        </button>
+      </div>
+
+      {mobileNavOpen && (
+        <div
+          className="sidebar-backdrop show"
+          onClick={() => setMobileNavOpen(false)}
+        />
+      )}
+
+      <aside className={`sidebar ${mobileNavOpen ? "mobile-open" : ""}`}>
         <div className="wordmark">
           Marginalia
           <small>NLP TOOLKIT · LOCAL MODELS</small>
@@ -32,7 +76,7 @@ export default function App() {
             <button
               key={tab.id}
               className={`tab-item ${active === tab.id ? "active" : ""}`}
-              onClick={() => setActive(tab.id)}
+              onClick={() => selectTab(tab.id)}
             >
               <span className="num">{String(i + 1).padStart(2, "0")}</span>
               {tab.label}
@@ -41,9 +85,14 @@ export default function App() {
         </nav>
 
         <div className="sidebar-foot">
-          FastAPI backend on :8000
-          <br />
-          No API key required
+          <button className="theme-toggle" onClick={toggleTheme}>
+            {theme === "light" ? "☾ dark mode" : "☀ light mode"}
+          </button>
+          <div style={{ marginTop: 10 }}>
+            FastAPI backend on :8000
+            <br />
+            No API key required
+          </div>
         </div>
       </aside>
 

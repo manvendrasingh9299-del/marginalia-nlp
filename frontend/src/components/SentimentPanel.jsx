@@ -2,6 +2,8 @@ import { useState } from "react";
 import { api } from "../api";
 import { Spinner, SkeletonBar } from "./Loading";
 import { useToast } from "../context/ToastContext";
+import CopyButton from "./CopyButton";
+import WordCounter from "./WordCounter";
 
 export default function SentimentPanel() {
   const [text, setText] = useState(
@@ -27,6 +29,13 @@ export default function SentimentPanel() {
     }
   }
 
+  function handleKeyDown(e) {
+    if ((e.metaKey || e.ctrlKey) && e.key === "Enter") {
+      e.preventDefault();
+      if (!loading && text.trim()) run();
+    }
+  }
+
   return (
     <div>
       <h1 className="panel-title">Sentiment</h1>
@@ -37,12 +46,15 @@ export default function SentimentPanel() {
         className="manuscript"
         value={text}
         onChange={(e) => setText(e.target.value)}
+        onKeyDown={handleKeyDown}
       />
+      <WordCounter text={text} />
 
       <button className="run-btn" onClick={run} disabled={loading || !text.trim()}>
         {loading && <Spinner />}
         {loading ? "analyzing…" : "run analysis"}
       </button>
+      <span className="shortcut-hint">⌘/Ctrl + Enter to run</span>
 
       {error && <div className="error-note">{error}</div>}
 
@@ -50,7 +62,10 @@ export default function SentimentPanel() {
 
       {result && !loading && (
         <div className="output">
-          <div className="output-label">RESULT</div>
+          <div className="output-label-row">
+            <div className="output-label">RESULT</div>
+            <CopyButton text={`${result.label} (${(result.score * 100).toFixed(1)}%)`} />
+          </div>
           <div className="sentiment-card">
             <span
               className={`sentiment-badge ${
