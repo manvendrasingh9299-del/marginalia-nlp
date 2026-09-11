@@ -4,6 +4,11 @@ import { Spinner, SkeletonBar } from "./Loading";
 import { useToast } from "../context/ToastContext";
 import CopyButton from "./CopyButton";
 import WordCounter from "./WordCounter";
+import EmptyState from "./EmptyState";
+import HistoryList from "./HistoryList";
+import ExportButtons from "./ExportButtons";
+import DropTextarea from "./DropTextarea";
+import useHistory from "../hooks/useHistory";
 
 export default function SentimentPanel() {
   const [text, setText] = useState(
@@ -13,6 +18,7 @@ export default function SentimentPanel() {
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
   const { addToast } = useToast();
+  const { history, addEntry, clearHistory } = useHistory();
 
   async function run() {
     setLoading(true);
@@ -20,6 +26,7 @@ export default function SentimentPanel() {
     try {
       const res = await api.sentiment(text);
       setResult(res);
+      addEntry({ text, result: res });
       addToast("Sentiment analysis complete", "success");
     } catch (e) {
       setError(e.message);
@@ -36,16 +43,21 @@ export default function SentimentPanel() {
     }
   }
 
+  function handleRerun(entry) {
+    setText(entry.text);
+    setResult(entry.result);
+  }
+
   return (
     <div>
       <h1 className="panel-title">Sentiment</h1>
       <p className="panel-sub">distilbert-sst2 · classifies polarity and confidence</p>
 
       <label className="field-label">TEXT</label>
-      <textarea
+      <DropTextarea
         className="manuscript"
         value={text}
-        onChange={(e) => setText(e.target.value)}
+        onChange={setText}
         onKeyDown={handleKeyDown}
       />
       <WordCounter text={text} />
@@ -60,11 +72,22 @@ export default function SentimentPanel() {
 
       {loading && <SkeletonBar />}
 
+      {!result && !loading && !error && (
+        <EmptyState message="Run analysis to see the sentiment and confidence score here." />
+      )}
+
       {result && !loading && (
         <div className="output">
           <div className="output-label-row">
             <div className="output-label">RESULT</div>
-            <CopyButton text={`${result.label} (${(result.score * 100).toFixed(1)}%)`} />
+            <div style={{ display: "flex", gap: 8 }}>
+              <CopyButton text={`${result.label} (${(result.score * 100).toFixed(1)}%)`} />
+              <ExportButtons
+                jsonData={result}
+                csvRows={[["label", "score"], [result.label, result.score]]}
+                filenameBase="sentiment-result"
+              />
+            </div>
           </div>
           <div className="sentiment-card">
             <span
@@ -86,6 +109,15 @@ export default function SentimentPanel() {
           </div>
         </div>
       )}
+
+      <HistoryList
+        history={history}
+        onRerun={handleRerun}
+        onClear={clearHistory}
+        renderSummary={(entry) =>
+          `${entry.text.slice(0, 40)}${entry.text.length > 40 ? "…" : ""} → ${entry.result.label}`
+        }
+      />
     </div>
   );
 }

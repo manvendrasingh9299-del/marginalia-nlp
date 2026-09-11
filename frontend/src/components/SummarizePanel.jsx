@@ -4,6 +4,11 @@ import { Spinner, SkeletonLines } from "./Loading";
 import { useToast } from "../context/ToastContext";
 import CopyButton from "./CopyButton";
 import WordCounter from "./WordCounter";
+import EmptyState from "./EmptyState";
+import HistoryList from "./HistoryList";
+import ExportButtons from "./ExportButtons";
+import DropTextarea from "./DropTextarea";
+import useHistory from "../hooks/useHistory";
 
 const SAMPLE = `The James Webb Space Telescope has revolutionized our view of the early universe. Since becoming operational, it has captured images of galaxies formed within a few hundred million years of the Big Bang, far earlier than astronomers expected to find well-structured galaxies. Its infrared instruments allow it to peer through cosmic dust that blocked earlier telescopes, revealing star-forming regions in unprecedented detail. Researchers are now revising models of galaxy formation to account for these surprisingly mature early structures. The telescope is also analyzing the atmospheres of exoplanets, searching for chemical signatures that could indicate habitability.`;
 
@@ -15,6 +20,7 @@ export default function SummarizePanel() {
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
   const { addToast } = useToast();
+  const { history, addEntry, clearHistory } = useHistory();
 
   async function run() {
     setLoading(true);
@@ -22,6 +28,7 @@ export default function SummarizePanel() {
     try {
       const res = await api.summarize(text, Number(maxLen), Number(minLen));
       setResult(res);
+      addEntry({ text, result: res });
       addToast("Summary generated", "success");
     } catch (e) {
       setError(e.message);
@@ -38,16 +45,21 @@ export default function SummarizePanel() {
     }
   }
 
+  function handleRerun(entry) {
+    setText(entry.text);
+    setResult(entry.result);
+  }
+
   return (
     <div>
       <h1 className="panel-title">Summarize</h1>
       <p className="panel-sub">distilbart-cnn · abstractive summary of longer passages</p>
 
       <label className="field-label">TEXT (15+ words)</label>
-      <textarea
+      <DropTextarea
         className="manuscript"
         value={text}
-        onChange={(e) => setText(e.target.value)}
+        onChange={setText}
         onKeyDown={handleKeyDown}
       />
       <WordCounter text={text} minWords={15} />
@@ -83,15 +95,35 @@ export default function SummarizePanel() {
 
       {loading && <SkeletonLines lines={3} />}
 
+      {!result && !loading && !error && (
+        <EmptyState message="Run analysis to see a generated summary here." />
+      )}
+
       {result && !loading && (
         <div className="output">
           <div className="output-label-row">
             <div className="output-label">SUMMARY</div>
-            <CopyButton text={result.summary} />
+            <div style={{ display: "flex", gap: 8 }}>
+              <CopyButton text={result.summary} />
+              <ExportButtons
+                jsonData={result}
+                csvRows={[["summary"], [result.summary]]}
+                filenameBase="summary-result"
+              />
+            </div>
           </div>
           <p className="summary-text">{result.summary}</p>
         </div>
       )}
+
+      <HistoryList
+        history={history}
+        onRerun={handleRerun}
+        onClear={clearHistory}
+        renderSummary={(entry) =>
+          `${entry.text.slice(0, 30)}… → ${entry.result.summary.slice(0, 40)}…`
+        }
+      />
     </div>
   );
 }

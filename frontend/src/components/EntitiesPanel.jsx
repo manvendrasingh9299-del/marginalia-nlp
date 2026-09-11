@@ -4,6 +4,11 @@ import { Spinner, SkeletonLines } from "./Loading";
 import { useToast } from "../context/ToastContext";
 import CopyButton from "./CopyButton";
 import WordCounter from "./WordCounter";
+import EmptyState from "./EmptyState";
+import HistoryList from "./HistoryList";
+import ExportButtons from "./ExportButtons";
+import DropTextarea from "./DropTextarea";
+import useHistory from "../hooks/useHistory";
 
 const SAMPLE =
   "Marie Curie was born in Warsaw, Poland, and later moved to Paris where she conducted her research at the Sorbonne. In 1903, she and Pierre Curie won the Nobel Prize in Physics.";
@@ -29,6 +34,7 @@ export default function EntitiesPanel() {
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
   const { addToast } = useToast();
+  const { history, addEntry, clearHistory } = useHistory();
 
   async function run() {
     setLoading(true);
@@ -36,6 +42,7 @@ export default function EntitiesPanel() {
     try {
       const res = await api.entities(text);
       setEntities(res);
+      addEntry({ text, result: res });
       addToast(`Found ${res.length} entities`, "success");
     } catch (e) {
       setError(e.message);
@@ -50,6 +57,16 @@ export default function EntitiesPanel() {
       e.preventDefault();
       if (!loading && text.trim()) run();
     }
+  }
+
+  function handleChange(value) {
+    setText(value);
+    setEntities(null);
+  }
+
+  function handleRerun(entry) {
+    setText(entry.text);
+    setEntities(entry.result);
   }
 
   function renderHighlighted() {
@@ -83,19 +100,20 @@ export default function EntitiesPanel() {
     ? entities.map((e) => `${e.text} (${e.label})`).join(", ")
     : "";
 
+  const csvRows = entities
+    ? [["text", "label", "start", "end"], ...entities.map((e) => [e.text, e.label, e.start, e.end])]
+    : null;
+
   return (
     <div>
       <h1 className="panel-title">Entities</h1>
       <p className="panel-sub">spaCy en_core_web_sm · named entity recognition</p>
 
       <label className="field-label">TEXT</label>
-      <textarea
+      <DropTextarea
         className="manuscript"
         value={text}
-        onChange={(e) => {
-          setText(e.target.value);
-          setEntities(null);
-        }}
+        onChange={handleChange}
         onKeyDown={handleKeyDown}
       />
       <WordCounter text={text} />
@@ -110,13 +128,24 @@ export default function EntitiesPanel() {
 
       {loading && <SkeletonLines lines={4} />}
 
+      {!entities && !loading && !error && (
+        <EmptyState message="Run analysis to see named entities highlighted here." />
+      )}
+
       {entities && !loading && (
         <div className="output">
           <div className="output-label-row">
             <div className="output-label">
               TAGGED TEXT ({entities.length} entities)
             </div>
-            <CopyButton text={entitiesAsText} />
+            <div style={{ display: "flex", gap: 8 }}>
+              <CopyButton text={entitiesAsText} />
+              <ExportButtons
+                jsonData={entities}
+                csvRows={csvRows}
+                filenameBase="entities-result"
+              />
+            </div>
           </div>
           <div className="entity-text">{renderHighlighted()}</div>
 
@@ -133,6 +162,15 @@ export default function EntitiesPanel() {
           </div>
         </div>
       )}
+
+      <HistoryList
+        history={history}
+        onRerun={handleRerun}
+        onClear={clearHistory}
+        renderSummary={(entry) =>
+          `${entry.text.slice(0, 40)}… → ${entry.result.length} entities`
+        }
+      />
     </div>
   );
 }

@@ -3,6 +3,10 @@ import { api } from "../api";
 import { Spinner, SkeletonLines } from "./Loading";
 import { useToast } from "../context/ToastContext";
 import CopyButton from "./CopyButton";
+import EmptyState from "./EmptyState";
+import HistoryList from "./HistoryList";
+import ExportButtons from "./ExportButtons";
+import useHistory from "../hooks/useHistory";
 
 export default function SimilarityPanel() {
   const [query, setQuery] = useState("a fast way to cook rice");
@@ -16,6 +20,7 @@ export default function SimilarityPanel() {
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
   const { addToast } = useToast();
+  const { history, addEntry, clearHistory } = useHistory();
 
   function updateCandidate(i, value) {
     const next = [...candidates];
@@ -34,6 +39,7 @@ export default function SimilarityPanel() {
       const cleaned = candidates.map((c) => c.trim()).filter(Boolean);
       const res = await api.similarity(query, cleaned);
       setResults(res);
+      addEntry({ query, candidates: cleaned, result: res });
       addToast("Ranked by similarity", "success");
     } catch (e) {
       setError(e.message);
@@ -50,9 +56,19 @@ export default function SimilarityPanel() {
     }
   }
 
+  function handleRerun(entry) {
+    setQuery(entry.query);
+    setCandidates(entry.candidates);
+    setResults(entry.result);
+  }
+
   const resultsAsText = results
     ? results.map((r, i) => `${i + 1}. ${r.candidate} (${r.score.toFixed(3)})`).join("\n")
     : "";
+
+  const csvRows = results
+    ? [["rank", "candidate", "score"], ...results.map((r, i) => [i + 1, r.candidate, r.score])]
+    : null;
 
   return (
     <div>
@@ -106,11 +122,22 @@ export default function SimilarityPanel() {
 
       {loading && <SkeletonLines lines={4} />}
 
+      {!results && !loading && !error && (
+        <EmptyState message="Run analysis to see candidates ranked by similarity here." />
+      )}
+
       {results && !loading && (
         <div className="output">
           <div className="output-label-row">
             <div className="output-label">RANKED BY SIMILARITY</div>
-            <CopyButton text={resultsAsText} />
+            <div style={{ display: "flex", gap: 8 }}>
+              <CopyButton text={resultsAsText} />
+              <ExportButtons
+                jsonData={results}
+                csvRows={csvRows}
+                filenameBase="similarity-result"
+              />
+            </div>
           </div>
           {results.map((r, i) => (
             <div className="sim-result-row" key={i}>
@@ -121,6 +148,13 @@ export default function SimilarityPanel() {
           ))}
         </div>
       )}
+
+      <HistoryList
+        history={history}
+        onRerun={handleRerun}
+        onClear={clearHistory}
+        renderSummary={(entry) => `${entry.query.slice(0, 40)}… → top: ${entry.result[0]?.candidate.slice(0, 30)}…`}
+      />
     </div>
   );
 }
