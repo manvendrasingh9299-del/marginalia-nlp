@@ -4,7 +4,9 @@ import SummarizePanel from "./components/SummarizePanel";
 import EntitiesPanel from "./components/EntitiesPanel";
 import KeywordsPanel from "./components/KeywordsPanel";
 import SimilarityPanel from "./components/SimilarityPanel";
+import BatchPanel from "./components/BatchPanel";
 import ToastContainer from "./components/ToastContainer";
+import SettingsPanel from "./components/SettingsPanel";
 
 const TABS = [
   { id: "sentiment", label: "Sentiment", component: SentimentPanel },
@@ -12,6 +14,7 @@ const TABS = [
   { id: "entities", label: "Entities", component: EntitiesPanel },
   { id: "keywords", label: "Keywords", component: KeywordsPanel },
   { id: "similarity", label: "Similarity", component: SimilarityPanel },
+  { id: "batch", label: "Batch", component: BatchPanel },
 ];
 
 export default function App() {
@@ -88,16 +91,17 @@ export default function App() {
           <button className="theme-toggle" onClick={toggleTheme}>
             {theme === "light" ? "☾ dark mode" : "☀ light mode"}
           </button>
+          <SettingsPanel />
           <div style={{ marginTop: 10 }}>
-            FastAPI backend on :8000
-            <br />
             No API key required
           </div>
         </div>
       </aside>
 
       <main className="main">
-        <ActivePanel />
+        <div key={active} className="panel-transition">
+          <ActivePanel />
+        </div>
       </main>
     </div>
   );
