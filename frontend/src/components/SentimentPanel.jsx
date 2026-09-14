@@ -59,6 +59,7 @@ export default function SentimentPanel() {
         value={text}
         onChange={setText}
         onKeyDown={handleKeyDown}
+        ariaLabel="Text to analyze for sentiment"
       />
       <WordCounter text={text} />
 
@@ -68,7 +69,7 @@ export default function SentimentPanel() {
       </button>
       <span className="shortcut-hint">⌘/Ctrl + Enter to run</span>
 
-      {error && <div className="error-note">{error}</div>}
+      {error && <div className="error-note" role="alert">{error}</div>}
 
       {loading && <SkeletonBar />}
 

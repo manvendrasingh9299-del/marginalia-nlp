@@ -115,6 +115,7 @@ export default function EntitiesPanel() {
         value={text}
         onChange={handleChange}
         onKeyDown={handleKeyDown}
+        ariaLabel="Text to extract entities from"
       />
       <WordCounter text={text} />
 
@@ -124,7 +125,7 @@ export default function EntitiesPanel() {
       </button>
       <span className="shortcut-hint">⌘/Ctrl + Enter to run</span>
 
-      {error && <div className="error-note">{error}</div>}
+      {error && <div className="error-note" role="alert">{error}</div>}
 
       {loading && <SkeletonLines lines={4} />}
 

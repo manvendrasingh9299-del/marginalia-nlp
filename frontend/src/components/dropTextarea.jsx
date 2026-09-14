@@ -1,4 +1,4 @@
-export default function DropTextarea({ value, onChange, onKeyDown, className }) {
+export default function DropTextarea({ value, onChange, onKeyDown, className, ariaLabel }) {
   function handleDrop(e) {
     e.preventDefault();
     const file = e.dataTransfer.files && e.dataTransfer.files[0];
@@ -22,6 +22,7 @@ export default function DropTextarea({ value, onChange, onKeyDown, className }) 
         value={value}
         onChange={(e) => onChange(e.target.value)}
         onKeyDown={onKeyDown}
+        aria-label={ariaLabel || "Input text"}
       />
       <div className="drop-hint">drop a .txt file here to load text</div>
     </div>

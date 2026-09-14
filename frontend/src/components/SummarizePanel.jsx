@@ -22,6 +22,9 @@ export default function SummarizePanel() {
   const { addToast } = useToast();
   const { history, addEntry, clearHistory } = useHistory();
 
+  const wordCount = text.trim() === "" ? 0 : text.trim().split(/\s+/).length;
+  const meetsMinWords = wordCount >= 15;
+
   async function run() {
     setLoading(true);
     setError(null);
@@ -41,7 +44,7 @@ export default function SummarizePanel() {
   function handleKeyDown(e) {
     if ((e.metaKey || e.ctrlKey) && e.key === "Enter") {
       e.preventDefault();
-      if (!loading && text.trim()) run();
+      if (!loading && meetsMinWords) run();
     }
   }
 
@@ -61,6 +64,7 @@ export default function SummarizePanel() {
         value={text}
         onChange={setText}
         onKeyDown={handleKeyDown}
+        ariaLabel="Text to summarize"
       />
       <WordCounter text={text} minWords={15} />
 
@@ -85,13 +89,18 @@ export default function SummarizePanel() {
         </div>
       </div>
 
-      <button className="run-btn" onClick={run} disabled={loading || !text.trim()}>
+      <button className="run-btn" onClick={run} disabled={loading || !meetsMinWords}>
         {loading && <Spinner />}
         {loading ? "summarizing…" : "run analysis"}
       </button>
       <span className="shortcut-hint">⌘/Ctrl + Enter to run</span>
+      {!meetsMinWords && (
+        <div className="field-hint">
+          Add {15 - wordCount} more word{15 - wordCount === 1 ? "" : "s"} to enable summarization.
+        </div>
+      )}
 
-      {error && <div className="error-note">{error}</div>}
+      {error && <div className="error-note" role="alert">{error}</div>}
 
       {loading && <SkeletonLines lines={3} />}
 
