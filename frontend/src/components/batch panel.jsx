@@ -66,6 +66,7 @@ export default function BatchPanel() {
         style={{ minHeight: 140 }}
         value={text}
         onChange={(e) => setText(e.target.value)}
+        aria-label="Lines to run batch sentiment analysis on"
       />
 
       <button className="run-btn" onClick={run} disabled={loading || !text.trim()}>
@@ -73,7 +74,7 @@ export default function BatchPanel() {
         {loading ? "processing…" : "run batch"}
       </button>
 
-      {error && <div className="error-note">{error}</div>}
+      {error && <div className="error-note" role="alert">{error}</div>}
 
       {loading && <SkeletonLines lines={5} />}
 

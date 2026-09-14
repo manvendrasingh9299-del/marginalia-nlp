@@ -81,6 +81,7 @@ export default function SimilarityPanel() {
         value={query}
         onChange={(e) => setQuery(e.target.value)}
         onKeyDown={handleKeyDown}
+        aria-label="Similarity search query"
       />
 
       <label className="field-label" style={{ marginTop: 18 }}>
@@ -93,8 +94,9 @@ export default function SimilarityPanel() {
             value={c}
             onChange={(e) => updateCandidate(i, e.target.value)}
             onKeyDown={handleKeyDown}
+            aria-label={`Candidate ${i + 1}`}
           />
-          <button className="remove-btn" onClick={() => removeCandidate(i)}>
+          <button className="remove-btn" onClick={() => removeCandidate(i)} aria-label={`Remove candidate ${i + 1}`}>
             ×
           </button>
         </div>
@@ -118,7 +120,7 @@ export default function SimilarityPanel() {
         <span className="shortcut-hint">⌘/Ctrl + Enter to run</span>
       </div>
 
-      {error && <div className="error-note">{error}</div>}
+      {error && <div className="error-note" role="alert">{error}</div>}
 
       {loading && <SkeletonLines lines={4} />}
 
