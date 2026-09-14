@@ -80,6 +80,8 @@ export default function App() {
               key={tab.id}
               className={`tab-item ${active === tab.id ? "active" : ""}`}
               onClick={() => selectTab(tab.id)}
+              aria-selected={active === tab.id}
+              role="tab"
             >
               <span className="num">{String(i + 1).padStart(2, "0")}</span>
               {tab.label}
