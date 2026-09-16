@@ -19,7 +19,7 @@ const TABS = [
 
 export default function App() {
   const [active, setActive] = useState("sentiment");
-  const [mobileNavOpen, setMobileNavOpen] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
   const [theme, setTheme] = useState("light");
 
   useEffect(() => {
@@ -30,7 +30,6 @@ export default function App() {
 
   function selectTab(id) {
     setActive(id);
-    setMobileNavOpen(false);
   }
 
   function toggleTheme() {
@@ -41,64 +40,43 @@ export default function App() {
     <div className="app-shell">
       <ToastContainer />
 
-      <div className="mobile-topbar">
-        <button
-          className="hamburger-btn"
-          onClick={() => setMobileNavOpen(true)}
-          aria-label="Open menu"
-        >
-          ☰
-        </button>
-        <div className="wordmark" style={{ fontSize: 18 }}>
-          Marginalia
-        </div>
-        <button
-          className="hamburger-btn"
-          onClick={toggleTheme}
-          aria-label="Toggle theme"
-        >
-          {theme === "light" ? "☾" : "☀"}
-        </button>
-      </div>
-
-      {mobileNavOpen && (
-        <div
-          className="sidebar-backdrop show"
-          onClick={() => setMobileNavOpen(false)}
-        />
-      )}
-
-      <aside className={`sidebar ${mobileNavOpen ? "mobile-open" : ""}`}>
-        <div className="wordmark">
-          Marginalia
-          <small>NLP TOOLKIT · LOCAL MODELS</small>
+      <header className="topbar">
+        <div className="topbar-row">
+          <h1 className="app-title">Marginalia</h1>
+          <button
+            className="menu-btn"
+            onClick={() => setMenuOpen(!menuOpen)}
+            aria-label="Menu"
+            aria-expanded={menuOpen}
+          >
+            <span className="menu-icon" />
+          </button>
         </div>
 
-        <nav className="tab-list">
-          {TABS.map((tab, i) => (
+        {menuOpen && (
+          <div className="menu-popover">
+            <button className="theme-toggle" onClick={toggleTheme} type="button">
+              {theme === "light" ? "☾ dark mode" : "☀ light mode"}
+            </button>
+            <SettingsPanel />
+            <div className="menu-footnote">No API key required</div>
+          </div>
+        )}
+
+        <nav className="tab-row" role="tablist" aria-label="Analysis type">
+          {TABS.map((tab) => (
             <button
               key={tab.id}
-              className={`tab-item ${active === tab.id ? "active" : ""}`}
+              className={`tab-pill ${active === tab.id ? "active" : ""}`}
               onClick={() => selectTab(tab.id)}
-              aria-selected={active === tab.id}
               role="tab"
+              aria-selected={active === tab.id}
             >
-              <span className="num">{String(i + 1).padStart(2, "0")}</span>
               {tab.label}
             </button>
           ))}
         </nav>
-
-        <div className="sidebar-foot">
-          <button className="theme-toggle" onClick={toggleTheme}>
-            {theme === "light" ? "☾ dark mode" : "☀ light mode"}
-          </button>
-          <SettingsPanel />
-          <div style={{ marginTop: 10 }}>
-            No API key required
-          </div>
-        </div>
-      </aside>
+      </header>
 
       <main className="main">
         <div key={active} className="panel-transition">
