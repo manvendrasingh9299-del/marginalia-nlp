@@ -34,14 +34,14 @@ def summarize_text(payload: SummarizeRequest):
             status_code=400,
             detail="Text is too short to summarize meaningfully (need 15+ words).",
         )
-    pipe = get_summarizer_pipeline()
+        pipe = get_summarizer_pipeline()
     result = pipe(
         payload.text,
         max_length=payload.max_length,
         min_length=payload.min_length,
         do_sample=False,
     )[0]
-    return {"summary": result["summary_text"]}
+    return {"summary": result["generated_text"]}
 
 
 @router.post("/entities", response_model=list[EntityResult])

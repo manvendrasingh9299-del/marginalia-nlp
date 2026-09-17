@@ -20,8 +20,7 @@ def get_sentiment_pipeline():
 def get_summarizer_pipeline():
     from transformers import pipeline
     # distilbart is much lighter than bart-large-cnn and runs fine on CPU
-    return pipeline("summarization", model="sshleifer/distilbart-cnn-12-6")
-
+    return pipeline("text2text-generation", model="sshleifer/distilbart-cnn-12-6")
 
 @lru_cache(maxsize=1)
 def get_ner_model():
