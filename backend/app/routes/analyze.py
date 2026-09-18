@@ -8,6 +8,8 @@ from app.models import (
     EntityResult,
     KeywordResult,
     SimilarityResult,
+    BatchSentimentRequest,
+    BatchSentimentResult,
 )
 from app.nlp_models import (
     get_sentiment_pipeline,
@@ -41,7 +43,10 @@ def summarize_text(payload: SummarizeRequest):
         min_length=payload.min_length,
         do_sample=False,
     )[0]
-    return {"summary": result["summary_text"]}
+    # Key name differs between the "summarization" and "text2text-generation"
+    # tasks depending on the installed transformers version.
+    summary = result.get("summary_text") or result.get("generated_text", "")
+    return {"summary": summary}
 
 
 @router.post("/entities", response_model=list[EntityResult])
@@ -79,3 +84,22 @@ def semantic_similarity(payload: SimilarityRequest):
         for cand, score in zip(payload.candidates, scores)
     ]
     return sorted(results, key=lambda r: r.score, reverse=True)
+
+
+@router.post("/batch-sentiment", response_model=list[BatchSentimentResult])
+def batch_sentiment(payload: BatchSentimentRequest):
+    """
+    Run sentiment on many texts in one request instead of one HTTP call
+    per line — the model is loaded once and reused for the whole batch.
+    """
+    pipe = get_sentiment_pipeline()
+    results = []
+    for text in payload.texts:
+        clean = text.strip()
+        if not clean:
+            continue
+        out = pipe(clean[:2000])[0]
+        results.append(
+            BatchSentimentResult(text=clean, label=out["label"], score=round(out["score"], 4))
+        )
+    return results

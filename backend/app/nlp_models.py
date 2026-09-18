@@ -19,8 +19,15 @@ def get_sentiment_pipeline():
 @lru_cache(maxsize=1)
 def get_summarizer_pipeline():
     from transformers import pipeline
-    # distilbart is much lighter than bart-large-cnn and runs fine on CPU
-    return pipeline("summarization", model="sshleifer/distilbart-cnn-12-6")
+
+    # Different transformers versions have renamed/reshuffled the
+    # "summarization" task over time. Try the classic name first, then
+    # fall back to the generic text2text task so this keeps working
+    # across versions without pinning an exact transformers release.
+    try:
+        return pipeline("summarization", model="sshleifer/distilbart-cnn-12-6")
+    except KeyError:
+        return pipeline("text2text-generation", model="sshleifer/distilbart-cnn-12-6")
 
 
 @lru_cache(maxsize=1)
