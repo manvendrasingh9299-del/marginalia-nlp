@@ -4,12 +4,7 @@
 ### NLP Toolkit
 
 *Sentiment · Summarization · Entities · Keywords · Similarity · Batch*
-
-[![CI](https://github.com/manvendrasingh9299-del/marginalia-nlp/actions/workflows/ci.yml/badge.svg)](https://github.com/manvendrasingh9299-del/marginalia-nlp/actions/workflows/ci.yml)
-![Python](https://img.shields.io/badge/Python-3.10+-3776AB?logo=python&logoColor=white)
-![FastAPI](https://img.shields.io/badge/FastAPI-009688?logo=fastapi&logoColor=white)
-![React](https://img.shields.io/badge/React-18-61DAFB?logo=react&logoColor=black)
-![License](https://img.shields.io/badge/license-MIT-blue)
+badge/license-MIT-blue)
 
 
 uvicorn app.main:app --reload --port 8000
