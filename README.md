@@ -11,9 +11,6 @@
 ![React](https://img.shields.io/badge/React-18-61DAFB?logo=react&logoColor=black)
 ![License](https://img.shields.io/badge/license-MIT-blue)
 
-A full-stack NLP dashboard running six analysis tasks on free, local
-Hugging Face and spaCy models — no API key, no billing, works offline
-after the first model download.
 
 </div>
 
