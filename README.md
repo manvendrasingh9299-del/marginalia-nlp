@@ -193,18 +193,6 @@ Set `FRONTEND_ORIGINS` on the host to your deployed frontend's URL.
 <summary>Expand</summary>
 <br>
 
-- **`pip install` fails with "externally-managed-environment"** — venv
-  isn't actually active. Run `source .venv/bin/activate` and confirm
-  `which python3` points inside `.venv/bin/`.
-- **Summarize returns 500** — fixed in current `nlp_models.py`, which
-  tries both old and new `transformers` task names.
-- **CORS errors** — check `FRONTEND_ORIGINS` in `backend/.env`.
-- **"Failed to fetch"** — open the ☰ menu, confirm the API URL matches
-  where your backend is actually running.
-- **First Summarize/Similarity/Batch request is slow** — model weights
-  downloading, one-time only.
-
-</details>
 
 <br>
 
