@@ -5,11 +5,15 @@
 
 *Sentiment · Summarization · Entities · Keywords · Similarity · Batch*
 
-
+[![CI](https://github.com/manvendrasingh9299-del/marginalia-nlp/actions/workflows/ci.yml/badge.svg)](https://github.com/manvendrasingh9299-del/marginalia-nlp/actions/workflows/ci.yml)
+![Python](https://img.shields.io/badge/Python-3.10+-3776AB?logo=python&logoColor=white)
 ![FastAPI](https://img.shields.io/badge/FastAPI-009688?logo=fastapi&logoColor=white)
 ![React](https://img.shields.io/badge/React-18-61DAFB?logo=react&logoColor=black)
 ![License](https://img.shields.io/badge/license-MIT-blue)
 
+A full-stack NLP dashboard running six analysis tasks on free, local
+Hugging Face and spaCy models — no API key, no billing, works offline
+after the first model download.
 
 </div>
 
@@ -189,6 +193,18 @@ Set `FRONTEND_ORIGINS` on the host to your deployed frontend's URL.
 <summary>Expand</summary>
 <br>
 
+- **`pip install` fails with "externally-managed-environment"** — venv
+  isn't actually active. Run `source .venv/bin/activate` and confirm
+  `which python3` points inside `.venv/bin/`.
+- **Summarize returns 500** — fixed in current `nlp_models.py`, which
+  tries both old and new `transformers` task names.
+- **CORS errors** — check `FRONTEND_ORIGINS` in `backend/.env`.
+- **"Failed to fetch"** — open the ☰ menu, confirm the API URL matches
+  where your backend is actually running.
+- **First Summarize/Similarity/Batch request is slow** — model weights
+  downloading, one-time only.
+
+</details>
 
 <br>
 
