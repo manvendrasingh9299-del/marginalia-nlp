@@ -11,7 +11,9 @@
 ![React](https://img.shields.io/badge/React-18-61DAFB?logo=react&logoColor=black)
 ![License](https://img.shields.io/badge/license-MIT-blue)
 
-
+A full-stack NLP dashboard running six analysis tasks on free, local
+Hugging Face and spaCy models — no API key, no billing, works offline
+after the first model download.
 
 </div>
 
@@ -89,6 +91,14 @@ Open http://localhost:5173.
 
 <br>
 
+## 🧪 Testing
+
+```bash
+cd frontend && npm test              # Vitest + React Testing Library
+cd backend  && python3 -m pytest tests/ -v   # mocked models, no downloads
+```
+
+<br>
 
 ## 📁 Project structure
 
@@ -134,6 +144,14 @@ nlp-toolkit/
 
 Interactive docs at `http://localhost:8000/docs` once running.
 
+| Method | Endpoint | Body |
+|---|---|---|
+| `POST` | `/analyze/sentiment` | `{ "text": string }` |
+| `POST` | `/analyze/summarize` | `{ "text": string, "max_length": int, "min_length": int }` |
+| `POST` | `/analyze/entities` | `{ "text": string }` |
+| `POST` | `/analyze/keywords` | `{ "text": string }` |
+| `POST` | `/analyze/similarity` | `{ "query": string, "candidates": string[] }` |
+| `POST` | `/analyze/batch-sentiment` | `{ "texts": string[] }` |
 
 </details>
 
