@@ -134,14 +134,6 @@ nlp-toolkit/
 
 Interactive docs at `http://localhost:8000/docs` once running.
 
-| Method | Endpoint | Body |
-|---|---|---|
-| `POST` | `/analyze/sentiment` | `{ "text": string }` |
-| `POST` | `/analyze/summarize` | `{ "text": string, "max_length": int, "min_length": int }` |
-| `POST` | `/analyze/entities` | `{ "text": string }` |
-| `POST` | `/analyze/keywords` | `{ "text": string }` |
-| `POST` | `/analyze/similarity` | `{ "query": string, "candidates": string[] }` |
-| `POST` | `/analyze/batch-sentiment` | `{ "texts": string[] }` |
 
 </details>
 
