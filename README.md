@@ -89,14 +89,6 @@ Open http://localhost:5173.
 
 <br>
 
-## 🧪 Testing
-
-```bash
-cd frontend && npm test              # Vitest + React Testing Library
-cd backend  && python3 -m pytest tests/ -v   # mocked models, no downloads
-```
-
-<br>
 
 ## 📁 Project structure
 
