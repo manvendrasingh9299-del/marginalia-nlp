@@ -14,6 +14,7 @@
 A full-stack NLP dashboard running six analysis tasks on free, local
 Hugging Face and spaCy models — no API key, no billing, works offline
 after the first model download.
+testing proccesing
 
 </div>
 
@@ -106,33 +107,6 @@ cd backend  && python3 -m pytest tests/ -v   # mocked models, no downloads
 <summary>Expand</summary>
 <br>
 
-nlp-toolkit/
-├── start.sh
-├── backend/
-│ ├── requirements.txt
-│ ├── .env.example
-│ ├── tests/test_analyze.py
-│ └── app/
-│ ├── main.py
-│ ├── models.py
-│ ├── nlp_models.py
-│ └── routes/analyze.py
-└── frontend/
-├── index.html
-├── package.json
-├── .env.example
-└── src/
-├── App.jsx
-├── api.js
-├── index.css
-├── hooks/useHistory.js
-├── utils/export.js
-├── context/ToastContext.jsx
-├── test/
-└── components/
-
-
-</details>
 
 <br>
 
