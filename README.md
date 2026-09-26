@@ -14,7 +14,6 @@
 A full-stack NLP dashboard running six analysis tasks on free, local
 Hugging Face and spaCy models — no API key, no billing, works offline
 after the first model download.
-testing proccesing
 
 </div>
 
@@ -107,6 +106,33 @@ cd backend  && python3 -m pytest tests/ -v   # mocked models, no downloads
 <summary>Expand</summary>
 <br>
 
+nlp-toolkit/
+├── start.sh
+├── backend/
+│ ├── requirements.txt
+│ ├── .env.example
+│ ├── tests/test_analyze.py
+│ └── app/
+│ ├── main.py
+│ ├── models.py
+│ ├── nlp_models.py
+│ └── routes/analyze.py
+└── frontend/
+├── index.html
+├── package.json
+├── .env.example
+└── src/
+├── App.jsx
+├── api.js
+├── index.css
+├── hooks/useHistory.js
+├── utils/export.js
+├── context/ToastContext.jsx
+├── test/
+└── components/
+
+
+</details>
 
 <br>
 
@@ -128,8 +154,6 @@ Interactive docs at `http://localhost:8000/docs` once running.
 | `POST` | `/analyze/batch-sentiment` | `{ "texts": string[] }` |
 
 </details>
-hosting processing 
-
 
 <br>
 
@@ -139,7 +163,10 @@ hosting processing
 <summary>Expand</summary>
 <br>
 
-tend/.env   # sets VITE_API_BASE_URL
+**Env config:**
+```bash
+cp backend/.env.example backend/.env     # sets FRONTEND_ORIGINS
+cp frontend/.env.example frontend/.env   # sets VITE_API_BASE_URL
 ```
 The frontend URL can also be changed at runtime from the ☰ menu.
 
@@ -169,7 +196,11 @@ Set `FRONTEND_ORIGINS` on the host to your deployed frontend's URL.
 - **`pip install` fails with "externally-managed-environment"** — venv
   isn't actually active. Run `source .venv/bin/activate` and confirm
   `which python3` points inside `.venv/bin/`.
-
+- **Summarize returns 500** — fixed in current `nlp_models.py`, which
+  tries both old and new `transformers` task names.
+- **CORS errors** — check `FRONTEND_ORIGINS` in `backend/.env`.
+- **"Failed to fetch"** — open the ☰ menu, confirm the API URL matches
+  where your backend is actually running.
 - **First Summarize/Similarity/Batch request is slow** — model weights
   downloading, one-time only.
 
@@ -179,7 +210,7 @@ Set `FRONTEND_ORIGINS` on the host to your deployed frontend's URL.
 
 ## 🗺 Roadmap
 
-
+- [ ] Persist history to SQLite (currently in-memory)
 - [ ] `.pdf` upload support
 - [ ] `docker-compose up` for both services
 - [ ] Backend tests against real models (slow, opt-in CI job)
