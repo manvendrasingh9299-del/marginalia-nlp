@@ -154,6 +154,8 @@ Interactive docs at `http://localhost:8000/docs` once running.
 | `POST` | `/analyze/batch-sentiment` | `{ "texts": string[] }` |
 
 </details>
+hosting processing 
+
 
 <br>
 
@@ -163,10 +165,7 @@ Interactive docs at `http://localhost:8000/docs` once running.
 <summary>Expand</summary>
 <br>
 
-**Env config:**
-```bash
-cp backend/.env.example backend/.env     # sets FRONTEND_ORIGINS
-cp frontend/.env.example frontend/.env   # sets VITE_API_BASE_URL
+tend/.env   # sets VITE_API_BASE_URL
 ```
 The frontend URL can also be changed at runtime from the ☰ menu.
 
@@ -196,11 +195,7 @@ Set `FRONTEND_ORIGINS` on the host to your deployed frontend's URL.
 - **`pip install` fails with "externally-managed-environment"** — venv
   isn't actually active. Run `source .venv/bin/activate` and confirm
   `which python3` points inside `.venv/bin/`.
-- **Summarize returns 500** — fixed in current `nlp_models.py`, which
-  tries both old and new `transformers` task names.
-- **CORS errors** — check `FRONTEND_ORIGINS` in `backend/.env`.
-- **"Failed to fetch"** — open the ☰ menu, confirm the API URL matches
-  where your backend is actually running.
+
 - **First Summarize/Similarity/Batch request is slow** — model weights
   downloading, one-time only.
 
@@ -210,7 +205,7 @@ Set `FRONTEND_ORIGINS` on the host to your deployed frontend's URL.
 
 ## 🗺 Roadmap
 
-- [ ] Persist history to SQLite (currently in-memory)
+
 - [ ] `.pdf` upload support
 - [ ] `docker-compose up` for both services
 - [ ] Backend tests against real models (slow, opt-in CI job)
