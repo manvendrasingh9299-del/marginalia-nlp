@@ -18,16 +18,24 @@ def get_sentiment_pipeline():
 
 @lru_cache(maxsize=1)
 def get_summarizer_pipeline():
-    from transformers import pipeline
+    from transformers import AutoTokenizer, AutoModelForSeq2SeqLM
 
-    # Different transformers versions have renamed/reshuffled the
-    # "summarization" task over time. Try the classic name first, then
-    # fall back to the generic text2text task so this keeps working
-    # across versions without pinning an exact transformers release.
-    try:
-        return pipeline("summarization", model="sshleifer/distilbart-cnn-12-6")
-    except KeyError:
-        return pipeline("text2text-generation", model="sshleifer/distilbart-cnn-12-6")
+    model_name = "sshleifer/distilbart-cnn-12-6"
+    tokenizer = AutoTokenizer.from_pretrained(model_name)
+    model = AutoModelForSeq2SeqLM.from_pretrained(model_name)
+
+    def _summarize(text, max_length=120, min_length=30, do_sample=False):
+        inputs = tokenizer(text, return_tensors="pt", truncation=True, max_length=1024)
+        summary_ids = model.generate(
+            inputs["input_ids"],
+            max_length=max_length,
+            min_length=min_length,
+            do_sample=do_sample,
+        )
+        summary_text = tokenizer.decode(summary_ids[0], skip_special_tokens=True)
+        return [{"summary_text": summary_text}]
+
+    return _summarize
 
 
 @lru_cache(maxsize=1)
