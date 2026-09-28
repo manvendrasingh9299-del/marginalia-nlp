@@ -32,8 +32,7 @@ cd marginalia-nlp
 ./start.sh
 ```
 
-Opens the backend on `:8000` and frontend on `:5173`. First-time setup
-(installing dependencies) is one section down ↓
+↓
 
 <br>
 
