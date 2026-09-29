@@ -43,8 +43,6 @@ def summarize_text(payload: SummarizeRequest):
         min_length=payload.min_length,
         do_sample=False,
     )[0]
-    # Key name differs between the "summarization" and "text2text-generation"
-    # tasks depending on the installed transformers version.
     summary = result.get("summary_text") or result.get("generated_text", "")
     return {"summary": summary}
 
