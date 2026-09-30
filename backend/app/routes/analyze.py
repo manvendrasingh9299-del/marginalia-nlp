@@ -60,7 +60,6 @@ def extract_entities(payload: TextRequest):
 @router.post("/keywords", response_model=list[KeywordResult])
 def extract_keywords(payload: TextRequest):
     extractor = get_keyword_extractor()
-    # yake scores are "distance" — lower is more relevant, so we invert for the UI
     raw = extractor.extract_keywords(payload.text)
     return [
         KeywordResult(keyword=kw, score=round(1 / (1 + score), 4))
@@ -86,10 +85,6 @@ def semantic_similarity(payload: SimilarityRequest):
 
 @router.post("/batch-sentiment", response_model=list[BatchSentimentResult])
 def batch_sentiment(payload: BatchSentimentRequest):
-    """
-    Run sentiment on many texts in one request instead of one HTTP call
-    per line — the model is loaded once and reused for the whole batch.
-    """
     pipe = get_sentiment_pipeline()
     results = []
     for text in payload.texts:
