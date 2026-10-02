@@ -105,7 +105,6 @@ cd backend  && python3 -m pytest tests/ -v   # mocked models, no downloads
 <details>
 <summary>Expand</summary>
 <br>
-
 nlp-toolkit/
 ├── start.sh
 ├── backend/
@@ -131,13 +130,12 @@ nlp-toolkit/
 ├── test/
 └── components/
 
-
 </details>
 
 <br>
 
 ## 📡 API reference
-  
+
 <details>
 <summary>Expand — full endpoint list</summary>
 <br>
