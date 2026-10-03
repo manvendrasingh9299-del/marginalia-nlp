@@ -95,3 +95,61 @@ nlp-toolkit/
 ├── context/ToastContext.jsx
 ├── test/
 └── components/
+
+
+## API
+
+Interactive docs at `http://localhost:8000/docs` once running.
+
+| Method | Endpoint | Body |
+|---|---|---|
+| POST | `/analyze/sentiment` | `{ text }` |
+| POST | `/analyze/summarize` | `{ text, max_length, min_length }` |
+| POST | `/analyze/entities` | `{ text }` |
+| POST | `/analyze/keywords` | `{ text }` |
+| POST | `/analyze/similarity` | `{ query, candidates }` |
+| POST | `/analyze/batch-sentiment` | `{ texts }` |
+
+## Configuration
+
+```bash
+cp backend/.env.example backend/.env      # FRONTEND_ORIGINS
+cp frontend/.env.example frontend/.env    # VITE_API_BASE_URL
+```
+
+The frontend's API URL can also be changed at runtime from the menu,
+saved to localStorage.
+
+## Deployment
+
+Frontend builds to a static bundle (`npm run build`) — deploy to
+Vercel, Netlify, or GitHub Pages. Backend runs anywhere that hosts a
+long-lived Python process (Render, Fly.io, Railway):
+
+```bash
+uvicorn app.main:app --host 0.0.0.0 --port $PORT
+```
+
+Set `FRONTEND_ORIGINS` on the host to your deployed frontend's URL.
+
+## Troubleshooting
+
+- **`pip install` fails with "externally-managed-environment"** — your
+  venv isn't active. Run `source .venv/bin/activate` and confirm
+  `which python3` points inside `.venv/bin/`.
+- **CORS errors** — check `FRONTEND_ORIGINS` in `backend/.env`.
+- **"Failed to fetch"** — open the menu and confirm the API URL matches
+  where your backend is running.
+- **First Summarize/Similarity/Batch request is slow** — model weights
+  downloading, one-time only.
+
+## Roadmap
+
+- [ ] Persist history to SQLite
+- [ ] PDF upload support
+- [ ] Docker Compose for both services
+
+## License
+
+MIT
+
