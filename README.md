@@ -73,3 +73,25 @@ Backend tests mock the models, so they run in under a second with no
 downloads.
 
 ## Project structure
+
+nlp-toolkit/
+├── start.sh
+├── backend/
+│ ├── requirements.txt
+│ ├── tests/test_analyze.py
+│ └── app/
+│ ├── main.py
+│ ├── models.py
+│ ├── nlp_models.py
+│ └── routes/analyze.py
+└── frontend/
+├── package.json
+└── src/
+├── App.jsx
+├── api.js
+├── index.css
+├── hooks/useHistory.js
+├── utils/export.js
+├── context/ToastContext.jsx
+├── test/
+└── components/
