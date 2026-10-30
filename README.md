@@ -143,11 +143,6 @@ Set `FRONTEND_ORIGINS` on the host to your deployed frontend's URL.
 - **First Summarize/Similarity/Batch request is slow** — model weights
   downloading, one-time only.
 
-## Roadmap
-
-- [ ] Persist history to SQLite
-- [ ] PDF upload support
-- [ ] Docker Compose for both services
 
 ## License
 
