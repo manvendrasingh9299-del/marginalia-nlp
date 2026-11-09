@@ -6,7 +6,8 @@ import KeywordsPanel from "./components/KeywordsPanel";
 import SimilarityPanel from "./components/SimilarityPanel";
 import BatchPanel from "./components/BatchPanel";
 import ToastContainer from "./components/ToastContainer";
-import SettingsPanel from "./components/SettingsPanel";
+import { getBaseUrl, setBaseUrl } from "./api";
+import { useToast } from "./context/ToastContext";
 
 const TABS = [
   { id: "sentiment", label: "Sentiment", component: SentimentPanel },
@@ -21,6 +22,8 @@ export default function App() {
   const [active, setActive] = useState("sentiment");
   const [menuOpen, setMenuOpen] = useState(false);
   const [theme, setTheme] = useState("light");
+  const [apiUrl, setApiUrl] = useState(getBaseUrl());
+  const { addToast } = useToast();
 
   useEffect(() => {
     document.documentElement.setAttribute("data-theme", theme);
@@ -28,12 +31,14 @@ export default function App() {
 
   const ActivePanel = TABS.find((t) => t.id === active).component;
 
-  function selectTab(id) {
-    setActive(id);
-  }
-
   function toggleTheme() {
     setTheme((t) => (t === "light" ? "dark" : "light"));
+  }
+
+  function saveApiUrl() {
+    setBaseUrl(apiUrl);
+    setApiUrl(getBaseUrl());
+    addToast("API base URL updated", "success");
   }
 
   return (
@@ -58,8 +63,22 @@ export default function App() {
             <button className="theme-toggle" onClick={toggleTheme} type="button">
               {theme === "light" ? "☾ dark mode" : "☀ light mode"}
             </button>
-            <SettingsPanel />
-            <div className="menu-footnote">No API key required</div>
+
+            <div className="menu-divider" />
+
+            <label className="field-label">API BASE URL</label>
+            <input
+              className="manuscript"
+              value={apiUrl}
+              onChange={(e) => setApiUrl(e.target.value)}
+            />
+            <button
+              className="run-btn menu-save-btn"
+              onClick={saveApiUrl}
+              type="button"
+            >
+              save
+            </button>
           </div>
         )}
 
@@ -68,7 +87,7 @@ export default function App() {
             <button
               key={tab.id}
               className={`tab-pill ${active === tab.id ? "active" : ""}`}
-              onClick={() => selectTab(tab.id)}
+              onClick={() => setActive(tab.id)}
               role="tab"
               aria-selected={active === tab.id}
             >

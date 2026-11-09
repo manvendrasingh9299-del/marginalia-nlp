@@ -13,7 +13,7 @@ class SummarizeRequest(TextRequest):
 
 class SimilarityRequest(BaseModel):
     query: str = Field(..., min_length=1)
-    candidates: List[str] = Field(..., min_items=1)
+    candidates: List[str] = Field(..., min_length=1)
 
 
 class SentimentResult(BaseModel):
@@ -35,4 +35,14 @@ class KeywordResult(BaseModel):
 
 class SimilarityResult(BaseModel):
     candidate: str
+    score: float
+
+
+class BatchSentimentRequest(BaseModel):
+    texts: List[str] = Field(..., min_length=1, max_length=200)
+
+
+class BatchSentimentResult(BaseModel):
+    text: str
+    label: str
     score: float

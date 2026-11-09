@@ -8,6 +8,8 @@ from app.models import (
     EntityResult,
     KeywordResult,
     SimilarityResult,
+    BatchSentimentRequest,
+    BatchSentimentResult,
 )
 from app.nlp_models import (
     get_sentiment_pipeline,
@@ -41,7 +43,9 @@ def summarize_text(payload: SummarizeRequest):
         min_length=payload.min_length,
         do_sample=False,
     )[0]
-    return {"summary": result["generated_text"]}
+    
+summary = result.get("summary_text") or result.get("generated_text", "")
+return {"summary": summary}
 
 
 @router.post("/entities", response_model=list[EntityResult])
@@ -57,7 +61,6 @@ def extract_entities(payload: TextRequest):
 @router.post("/keywords", response_model=list[KeywordResult])
 def extract_keywords(payload: TextRequest):
     extractor = get_keyword_extractor()
-    # yake scores are "distance" — lower is more relevant, so we invert for the UI
     raw = extractor.extract_keywords(payload.text)
     return [
         KeywordResult(keyword=kw, score=round(1 / (1 + score), 4))
@@ -79,3 +82,18 @@ def semantic_similarity(payload: SimilarityRequest):
         for cand, score in zip(payload.candidates, scores)
     ]
     return sorted(results, key=lambda r: r.score, reverse=True)
+
+
+@router.post("/batch-sentiment", response_model=list[BatchSentimentResult])
+def batch_sentiment(payload: BatchSentimentRequest):
+    pipe = get_sentiment_pipeline()
+    results = []
+    for text in payload.texts:
+        clean = text.strip()
+        if not clean:
+            continue
+        out = pipe(clean[:2000])[0]
+        results.append(
+            BatchSentimentResult(text=clean, label=out["label"], score=round(out["score"], 4))
+        )
+    return results

@@ -142,11 +142,17 @@ input {
   box-shadow: 0 10px 24px rgba(23, 24, 26, 0.12);
 }
 
-.menu-footnote {
-  font-size: 11px;
-  color: var(--ink-soft);
-  text-align: center;
-  padding-top: 4px;
+.menu-divider {
+  height: 1px;
+  background: var(--rule-soft);
+  margin: 4px 0;
+}
+
+.menu-save-btn {
+  margin-top: 4px;
+  width: 100%;
+  justify-content: center;
+  padding: 10px;
 }
 
 .tab-row {
@@ -714,20 +720,7 @@ input.manuscript {
   margin-top: 4px;
 }
 
-/* --- Settings --- */
-
-.settings-block {
-  display: flex;
-  flex-direction: column;
-}
-
-.settings-popover {
-  margin-top: 4px;
-  padding: 10px;
-  border: 1.5px solid var(--rule);
-  border-radius: 14px;
-  background: var(--paper-dim);
-}
+/* --- Theme toggle button --- */
 
 .theme-toggle {
   width: 100%;
