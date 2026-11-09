@@ -134,6 +134,20 @@ Set `FRONTEND_ORIGINS` on the host to your deployed frontend's URL.
 
 ## Troubleshooting
 
+
+<br>
+
+## 🗺 Roadmap
+
+- [ ] Persist history to SQLite (currently in-memory)
+- [ ] `.pdf` upload support
+- [ ] `docker-compose up` for both services
+- [ ] Backend tests against real models (slow, opt-in CI job)
+
+<br>
+
+---
+=======
 - **`pip install` fails with "externally-managed-environment"** — your
   venv isn't active. Run `source .venv/bin/activate` and confirm
   `which python3` points inside `.venv/bin/`.
@@ -142,6 +156,7 @@ Set `FRONTEND_ORIGINS` on the host to your deployed frontend's URL.
   where your backend is running.
 - **First Summarize/Similarity/Batch request is slow** — model weights
   downloading, one-time only.
+
 
 
 ## License
